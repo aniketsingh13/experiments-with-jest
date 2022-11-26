@@ -6,14 +6,27 @@ jest.mock("axios");
 describe("get user service", () => {
     
 	test("should return user when API call is successful", async () => {
-	
-        expect(true).toBe(false);
+        axios.get.mockResolvedValue({data: {
+            "name": "Tanay",
+            "age": 30,
+            } });
+        const user= await getUser();
+        expect(user).toEqual({
+            "name": "Tanay",
+            "age": 30,
+            });
 
 	});
 
     test("should return errorMessage when API is call fails", async () => {
-       
-        expect(true).toBe(false);
-        
+       axios.get.mockRejectedValue({isAxiosError: true,response : {
+        data: {
+            errorMessage: "user not Found"
+        }
+       }});
+       axios.isAxiosError.mockImplementation(() => true)
+       const user = await getUser();
+        expect(user).toEqual({errorMessage : "user not Found"});
+        expect(axios.isAxiosError).toBeCalledTimes(1)
     })
 });
